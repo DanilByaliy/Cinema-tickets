@@ -10,11 +10,14 @@ import {
 import { SessionsService } from './sessions.service';
 import { CreateSessionDto } from './dtos/create-session.dto';
 import { UpdateSessionDto } from './dtos/update-session.dto';
+import { Serialize } from 'src/interceptors/serialize.interceptor';
+import { SessionDto } from './dtos/session.dto';
 
 @Controller('sessions')
 export class SessionsController {
   constructor(private sessionsService: SessionsService) {}
 
+  @Serialize(SessionDto)
   @Post()
   createSession(@Body() body: CreateSessionDto) {
     return this.sessionsService.create(body);
