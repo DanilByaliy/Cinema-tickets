@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Session } from '../sessions/session.entity';
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 @Entity()
 export class Movie {
@@ -19,4 +20,7 @@ export class Movie {
 
   @Column()
   description: string;
+
+  @OneToMany(() => Session, (session) => session.movie)
+  sessions: Session[];
 }
