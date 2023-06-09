@@ -21,7 +21,10 @@ export class SessionsService {
   }
 
   async findOne(id: string) {
-    const session = await this.repo.findOneBy({ id });
+    const session = await this.repo.findOne({
+      where: { id },
+      relations: { tickets: true },
+    });
     if (!session)
       throw new NotFoundException(`Session with id: ${id} not found`);
     return session;
