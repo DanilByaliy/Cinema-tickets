@@ -14,13 +14,16 @@ export class MoviesService {
   }
 
   async findOne(id: string) {
-    const movie = await this.repo.findOneBy({ id });
+    const movie = await this.repo.findOne({
+      where: { id },
+      relations: { sessions: true },
+    });
     if (!movie) throw new NotFoundException(`Movie with id: ${id} not found`);
     return movie;
   }
 
   find() {
-    return this.repo.find();
+    return this.repo.find({ relations: { sessions: true } });
   }
 
   async update(id: string, attrs: Partial<Movie>) {
