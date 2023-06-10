@@ -22,22 +22,22 @@ export class MoviesController {
   }
 
   @Get('/:id')
-  findUser(@Param('id') id: string) {
+  findMovie(@Param('id') id: string) {
     return this.moviesService.findOne(id);
   }
 
   @Get()
-  findAllUsers(@Query('page') page: string) {
+  findAllMovies(@Query('page') page: string) {
     return this.moviesService.find(parseInt(page));
   }
 
   @Patch('/:id')
-  updateUser(@Param('id') id: string, @Body() body: UpdateMovieDto) {
+  updateMovie(@Param('id') id: string, @Body() body: UpdateMovieDto) {
     return this.moviesService.update(id, body);
   }
 
   @Delete('/:id')
-  removeUser(@Param('id') id: string) {
+  removeMovie(@Param('id') id: string) {
     return this.moviesService.remove(id);
   }
 }
