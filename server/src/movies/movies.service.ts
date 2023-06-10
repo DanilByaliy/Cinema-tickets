@@ -22,8 +22,21 @@ export class MoviesService {
     return movie;
   }
 
-  find() {
-    return this.repo.find({ relations: { sessions: true } });
+  async find(page: number) {
+    const take = 2;
+    const skip = (page - 1) * 2;
+
+    const [result, total] = await this.repo.findAndCount({
+      relations: { sessions: true },
+      order: { title: 'DESC' },
+      take: take,
+      skip: skip,
+    });
+
+    return {
+      data: result,
+      count: total,
+    };
   }
 
   async update(id: string, attrs: Partial<Movie>) {

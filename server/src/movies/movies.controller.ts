@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { CreateMovieDto } from './dtos/create-movie.dto';
 import { MoviesService } from './movies.service';
@@ -26,8 +27,8 @@ export class MoviesController {
   }
 
   @Get()
-  findAllUsers() {
-    return this.moviesService.find();
+  findAllUsers(@Query('page') page: string) {
+    return this.moviesService.find(parseInt(page));
   }
 
   @Patch('/:id')
