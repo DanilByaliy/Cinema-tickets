@@ -9,5 +9,6 @@ import { MoviesModule } from 'src/movies/movies.module';
   imports: [TypeOrmModule.forFeature([Session]), MoviesModule],
   providers: [SessionsService],
   controllers: [SessionsController],
+  exports: [SessionsService],
 })
 export class SessionsModule {}
