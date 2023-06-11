@@ -10,6 +10,8 @@ import { Movie } from './movies/movie.entity';
 import { Session } from './sessions/session.entity';
 import { Ticket } from './tickets/ticket.entity';
 import { FilesModule } from './files/files.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -27,6 +29,9 @@ import { FilesModule } from './files/files.module';
           synchronize: true,
         };
       },
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'static'),
     }),
     MoviesModule,
     SessionsModule,
