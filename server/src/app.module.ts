@@ -9,6 +9,7 @@ import { TicketsModule } from './tickets/tickets.module';
 import { Movie } from './movies/movie.entity';
 import { Session } from './sessions/session.entity';
 import { Ticket } from './tickets/ticket.entity';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { Ticket } from './tickets/ticket.entity';
     MoviesModule,
     SessionsModule,
     TicketsModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
