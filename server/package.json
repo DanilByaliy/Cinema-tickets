@@ -33,6 +33,7 @@
     "cross-env": "^7.0.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
+    "sharp": "^0.32.1",
     "sqlite3": "^5.1.6",
     "typeorm": "^0.3.16"
   },
