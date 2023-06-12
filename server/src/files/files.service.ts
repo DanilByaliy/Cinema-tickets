@@ -3,6 +3,8 @@ import * as uuid from 'uuid';
 import * as path from 'path';
 import { writeFile } from 'fs/promises';
 import * as sharp from 'sharp';
+import * as PDFDocument from 'pdfkit';
+import { createWriteStream } from 'fs';
 
 @Injectable()
 export class FilesService {
@@ -30,4 +32,19 @@ export class FilesService {
   async convertToWebP(file: Buffer): Promise<Buffer> {
     return sharp(file).webp().toBuffer();
   }
+
+  createPDF() {
+    const fileName = 'ticket_' + uuid.v4() + '.pdf';
+    const filePath = path.resolve('pdfs', fileName);
+
+    const pdfDoc = new PDFDocument();
+    pdfDoc.pipe(createWriteStream(filePath));
+
+    return {
+      fileName,
+    };
+  }
 }
+
+const filesService = new FilesService();
+filesService.createPDF();
