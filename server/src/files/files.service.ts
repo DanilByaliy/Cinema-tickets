@@ -33,18 +33,32 @@ export class FilesService {
     return sharp(file).webp().toBuffer();
   }
 
-  createPDF() {
+  async createPDF() {
     const fileName = 'ticket_' + uuid.v4() + '.pdf';
     const filePath = path.resolve('pdfs', fileName);
 
     const pdfDoc = new PDFDocument();
-    pdfDoc.pipe(createWriteStream(filePath));
-
+    await this.savePdfToFile(pdfDoc, filePath);
     return {
       fileName,
     };
   }
-}
 
-const filesService = new FilesService();
-filesService.createPDF();
+  savePdfToFile(pdf: typeof PDFDocument, fileName: string): Promise<void> {
+    return new Promise<void>((resolve) => {
+      let pendingStepCount = 2;
+      const stepFinished = () => {
+        if (--pendingStepCount == 0) {
+          resolve();
+        }
+      };
+
+      const writeStream = createWriteStream(fileName);
+      writeStream.on('close', stepFinished);
+      pdf.pipe(writeStream);
+
+      pdf.end();
+      stepFinished();
+    });
+  }
+}
