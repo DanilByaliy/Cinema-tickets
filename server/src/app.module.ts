@@ -9,6 +9,7 @@ import { TicketsModule } from './tickets/tickets.module';
 import { Movie } from './movies/movie.entity';
 import { Session } from './sessions/session.entity';
 import { Ticket } from './tickets/ticket.entity';
+import { EmailsService } from './emails/emails.service';
 
 @Module({
   imports: [
@@ -32,6 +33,6 @@ import { Ticket } from './tickets/ticket.entity';
     TicketsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EmailsService],
 })
 export class AppModule {}
