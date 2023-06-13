@@ -21,4 +21,17 @@ export class EmailsService {
       },
     );
   }
+
+  async send(reciver: string) {
+    try {
+      const info = await this.transporter.sendMail({
+        to: reciver,
+        subject: 'Cinema-ticket',
+        text: 'Welcome to our cinema',
+      });
+      return info.messageId;
+    } catch (error) {
+      return error;
+    }
+  }
 }
