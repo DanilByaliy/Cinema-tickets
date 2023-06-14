@@ -12,6 +12,7 @@ import { Ticket } from './tickets/ticket.entity';
 import { EmailsService } from './emails/emails.service';
 import { EmailsModule } from './emails/emails.module';
 import { UsersModule } from './users/users.module';
+import { User } from './users/user.entity';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { UsersModule } from './users/users.module';
         return {
           type: 'sqlite',
           database: config.get<string>('DB_NAME'),
-          entities: [Movie, Session, Ticket],
+          entities: [Movie, Session, Ticket, User],
           synchronize: true,
         };
       },
