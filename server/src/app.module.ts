@@ -11,6 +11,7 @@ import { Session } from './sessions/session.entity';
 import { Ticket } from './tickets/ticket.entity';
 import { EmailsService } from './emails/emails.service';
 import { EmailsModule } from './emails/emails.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { EmailsModule } from './emails/emails.module';
     SessionsModule,
     TicketsModule,
     EmailsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService, EmailsService],
