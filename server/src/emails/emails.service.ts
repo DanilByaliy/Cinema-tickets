@@ -23,20 +23,19 @@ export class EmailsService {
           pass: this.PASSWORD,
         },
       },
-      {
-        from: this.FROM,
-      },
+      { from: this.FROM },
     );
   }
 
-  async send(reciver: string) {
+  async send(reciver: string, filePath: string) {
     try {
-      const info = await this.transporter.sendMail({
+      const { messageId } = await this.transporter.sendMail({
         to: reciver,
         subject: 'Cinema-ticket',
         text: 'Welcome to our cinema',
+        attachments: [{ path: filePath }],
       });
-      return info.messageId;
+      return messageId;
     } catch (error) {
       return error;
     }
