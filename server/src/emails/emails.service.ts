@@ -11,7 +11,11 @@ export class EmailsService {
   private readonly FROM = this.configService.get('TRANSPORTER_FROM');
 
   constructor(private configService: ConfigService) {
-    this.transporter = nodemailer.createTransport(
+    this.transporter = this.getTransporter();
+  }
+
+  getTransporter() {
+    return nodemailer.createTransport(
       {
         service: this.SERVICE,
         auth: {
