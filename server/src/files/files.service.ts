@@ -3,7 +3,7 @@ import { TicketInfo } from 'src/interfaces/ticket-info.interface';
 import * as uuid from 'uuid';
 import * as path from 'path';
 import { createWriteStream } from 'fs';
-import { readFile, writeFile } from 'fs/promises';
+import { readFile, unlink, writeFile } from 'fs/promises';
 import * as sharp from 'sharp';
 import * as PDFDocument from 'pdfkit';
 
@@ -40,12 +40,20 @@ export class FilesService {
     await writeFile(imageJpegPath, buffer);
   }
 
-  async createPDF() {
+  async createPDF(info: TicketInfo) {
     const fileName = 'ticket_' + uuid.v4() + '.pdf';
     const filePath = path.resolve('pdfs', fileName);
 
+    const imageWebPPath = path.resolve('static', info.image);
+    const imageJpegPath = imageWebPPath.replace('webp', 'jpeg');
+    await this.convertToJpeg(imageWebPPath, imageJpegPath);
+    info.image = imageJpegPath;
+
     const pdfDoc = new PDFDocument();
+    this.drawTicket(pdfDoc, info);
     await this.savePdfToFile(pdfDoc, filePath);
+
+    unlink(imageJpegPath);
     return {
       fileName,
     };
