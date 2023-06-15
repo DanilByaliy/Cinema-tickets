@@ -9,8 +9,11 @@ import { TicketsModule } from './tickets/tickets.module';
 import { Movie } from './movies/movie.entity';
 import { Session } from './sessions/session.entity';
 import { Ticket } from './tickets/ticket.entity';
+import { FilesModule } from './files/files.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { EmailsService } from './emails/emails.service';
 import { EmailsModule } from './emails/emails.module';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -29,9 +32,13 @@ import { EmailsModule } from './emails/emails.module';
         };
       },
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'static'),
+    }),
     MoviesModule,
     SessionsModule,
     TicketsModule,
+    FilesModule,
     EmailsModule,
   ],
   controllers: [AppController],
