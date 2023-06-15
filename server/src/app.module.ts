@@ -11,6 +11,8 @@ import { Session } from './sessions/session.entity';
 import { Ticket } from './tickets/ticket.entity';
 import { FilesModule } from './files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { EmailsService } from './emails/emails.service';
+import { EmailsModule } from './emails/emails.module';
 import { join } from 'path';
 
 @Module({
@@ -37,8 +39,9 @@ import { join } from 'path';
     SessionsModule,
     TicketsModule,
     FilesModule,
+    EmailsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EmailsService],
 })
 export class AppModule {}
