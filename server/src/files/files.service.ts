@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { TicketInfo } from 'src/interfaces/ticket-info.interface';
 import * as uuid from 'uuid';
 import * as path from 'path';
 import { createWriteStream } from 'fs';
@@ -66,5 +67,20 @@ export class FilesService {
       pdf.end();
       stepFinished();
     });
+  }
+
+  drawTicket(pdfDoc: typeof PDFDocument, info: TicketInfo) {
+    const filePath = path.resolve('static', info.image);
+    pdfDoc.image(filePath, {
+      fit: [250, 300],
+      align: 'center',
+      valign: 'center',
+    });
+    pdfDoc.fontSize(22);
+    pdfDoc.text('Cinema-tickets', 350, 100);
+    pdfDoc.text(info.movie);
+    pdfDoc.text(`Your row: ${info.row}`);
+    pdfDoc.text(`Your seat: ${info.seat}`);
+    pdfDoc.text(`${info.date}, ${info.time}`);
   }
 }
