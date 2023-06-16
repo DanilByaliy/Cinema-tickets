@@ -6,6 +6,8 @@ import { SessionsService } from 'src/sessions/sessions.service';
 import { TicketInfo } from 'src/interfaces/ticket-info.interface';
 import { File } from 'src/interfaces/file.interface';
 import { TicketsService } from 'src/tickets/tickets.service';
+import { Info } from 'src/interfaces/info.interface';
+import { Seat } from 'src/interfaces/seat.interface';
 
 @Injectable()
 export class OrdersService {
@@ -17,8 +19,7 @@ export class OrdersService {
   ) {}
 
   async makeOrder(order: OrderDto) {
-    const files: File[] = [];
-    const info: Partial<TicketInfo> = {};
+    let info: Info;
 
     const session = await this.sessionsService.findOneIncludesMovie(
       order.sessionId,
@@ -33,11 +34,20 @@ export class OrdersService {
         ...seat,
         session_id: order.sessionId,
       });
+    }
+
+    this.createPDFTicketsAndSend(order.customer, info, order.seats);
+  }
+
+  async createPDFTicketsAndSend(recipient: string, info: Info, seats: Seat[]) {
+    const files: File[] = [];
+
+    for (const seat of seats) {
       const ticketInfo = { ...seat, ...info };
       const file = await this.filesService.createPDF(ticketInfo as TicketInfo);
       files.push(file);
     }
 
-    await this.emailsService.send(order.customer, files);
+    await this.emailsService.send(recipient, files);
   }
 }
