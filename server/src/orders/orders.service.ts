@@ -19,24 +19,22 @@ export class OrdersService {
   ) {}
 
   async makeOrder(order: OrderDto) {
-    let info: Info;
+    const { sessionId, seats } = order;
+    const {
+      time,
+      date,
+      movie: { title, picture },
+    } = await this.sessionsService.findOneIncludesMovie(sessionId);
+    const info = { time, date, movie: title, image: picture };
 
-    const session = await this.sessionsService.findOneIncludesMovie(
-      order.sessionId,
-    );
-    info.time = session.time;
-    info.date = session.date;
-    info.movie = session.movie.title;
-    info.image = session.movie.picture;
-
-    for (const seat of order.seats) {
+    for (const seat of seats) {
       await this.ticketsService.create({
         ...seat,
-        session_id: order.sessionId,
+        session_id: sessionId,
       });
     }
 
-    this.createPDFTicketsAndSend(order.customer, info, order.seats);
+    this.createPDFTicketsAndSend(order.customer, info, seats);
   }
 
   async createPDFTicketsAndSend(recipient: string, info: Info, seats: Seat[]) {
