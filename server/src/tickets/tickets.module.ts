@@ -9,5 +9,6 @@ import { SessionsModule } from 'src/sessions/sessions.module';
   imports: [TypeOrmModule.forFeature([Ticket]), SessionsModule],
   providers: [TicketsService],
   controllers: [TicketsController],
+  exports: [TicketsService],
 })
 export class TicketsModule {}

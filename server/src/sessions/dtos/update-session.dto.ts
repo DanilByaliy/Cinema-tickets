@@ -17,4 +17,8 @@ export class UpdateSessionDto {
   @IsMilitaryTime()
   @IsOptional()
   time: string;
+
+  @IsString()
+  @IsOptional()
+  ticketPrice: number;
 }

@@ -22,6 +22,9 @@ export class Session {
   @Column()
   time: string;
 
+  @Column()
+  ticketPrice: number;
+
   @ManyToOne(() => Movie, (movie) => movie.sessions)
   movie: Movie;
 

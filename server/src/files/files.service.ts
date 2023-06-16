@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { TicketInfo } from 'src/interfaces/ticket-info.interface';
 import * as uuid from 'uuid';
-import * as path from 'path';
+import { resolve } from 'path';
 import { createWriteStream } from 'fs';
 import { readFile, unlink, writeFile } from 'fs/promises';
 import * as sharp from 'sharp';
@@ -19,7 +19,7 @@ export class FilesService {
       );
     }
     const fileName = uuid.v4() + '.webp';
-    const filePath = path.resolve('static', fileName);
+    const filePath = resolve('static', fileName);
     const buffer = await this.convertToWebP(file.buffer);
 
     try {
@@ -41,22 +41,20 @@ export class FilesService {
   }
 
   async createPDF(info: TicketInfo) {
-    const fileName = 'ticket_' + uuid.v4() + '.pdf';
-    const filePath = path.resolve('pdfs', fileName);
+    const name = 'ticket_' + uuid.v4() + '.pdf';
+    const path = resolve('pdfs', name);
 
-    const imageWebPPath = path.resolve('static', info.image);
+    const imageWebPPath = resolve('static', info.image);
     const imageJpegPath = imageWebPPath.replace('webp', 'jpeg');
     await this.convertToJpeg(imageWebPPath, imageJpegPath);
     info.image = imageJpegPath;
 
     const pdfDoc = new PDFDocument();
     this.drawTicket(pdfDoc, info);
-    await this.savePdfToFile(pdfDoc, filePath);
+    await this.savePdfToFile(pdfDoc, path);
 
     unlink(imageJpegPath);
-    return {
-      fileName,
-    };
+    return { name, path };
   }
 
   savePdfToFile(pdf: typeof PDFDocument, fileName: string): Promise<void> {
@@ -78,7 +76,7 @@ export class FilesService {
   }
 
   drawTicket(pdfDoc: typeof PDFDocument, info: TicketInfo) {
-    const filePath = path.resolve('static', info.image);
+    const filePath = resolve('static', info.image);
     pdfDoc.image(filePath, {
       fit: [250, 300],
       align: 'center',

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import { File } from '../interfaces/file.interface';
 
 @Injectable()
 export class EmailsService {
@@ -27,16 +28,22 @@ export class EmailsService {
     );
   }
 
-  async send(reciver: string, filePath: string) {
+  async send(reciver: string, files: File[]) {
     try {
       const { messageId } = await this.transporter.sendMail({
         to: reciver,
         subject: 'Cinema-ticket',
         text: 'Welcome to our cinema',
-        attachments: [{ path: filePath }],
+        attachments: files.map((file) => {
+          return {
+            filename: file.name,
+            path: file.path,
+          };
+        }),
       });
       return messageId;
     } catch (error) {
+      console.error(error);
       return error;
     }
   }
