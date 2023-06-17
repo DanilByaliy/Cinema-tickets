@@ -6,6 +6,7 @@ import { createWriteStream } from 'fs';
 import { readFile, unlink, writeFile } from 'fs/promises';
 import * as sharp from 'sharp';
 import * as PDFDocument from 'pdfkit';
+import { Seat } from 'src/interfaces/seat.interface';
 
 @Injectable()
 export class FilesService {
@@ -40,7 +41,7 @@ export class FilesService {
     await writeFile(imageJpegPath, buffer);
   }
 
-  async createPDF(info: TicketInfo) {
+  async createPDF(info: TicketInfo & Seat) {
     const name = 'ticket_' + uuid.v4() + '.pdf';
     const path = resolve('pdfs', name);
 
@@ -76,7 +77,7 @@ export class FilesService {
     });
   }
 
-  drawTicket(pdfDoc: typeof PDFDocument, info: TicketInfo) {
+  drawTicket(pdfDoc: typeof PDFDocument, info: TicketInfo & Seat) {
     const filePath = resolve('static', info.poster);
     pdfDoc.image(filePath, {
       fit: [250, 300],

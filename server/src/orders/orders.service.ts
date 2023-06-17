@@ -4,7 +4,7 @@ import { FilesService } from 'src/files/files.service';
 import { OrderDto } from './dtos/order.dto';
 import { SessionsService } from 'src/sessions/sessions.service';
 import { TicketsService } from 'src/tickets/tickets.service';
-import { Info } from 'src/interfaces/info.interface';
+import { TicketInfo } from 'src/interfaces/ticket-info.interface';
 import { Seat } from 'src/interfaces/seat.interface';
 
 @Injectable()
@@ -32,7 +32,11 @@ export class OrdersService {
     this.createPDFTicketsAndSend(order.customer, info, seats);
   }
 
-  async createPDFTicketsAndSend(recipient: string, info: Info, seats: Seat[]) {
+  async createPDFTicketsAndSend(
+    recipient: string,
+    info: TicketInfo,
+    seats: Seat[],
+  ) {
     const files = await Promise.all(
       seats.map((seat) => this.filesService.createPDF({ ...seat, ...info })),
     );
