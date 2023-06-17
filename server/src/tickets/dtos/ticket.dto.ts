@@ -12,5 +12,5 @@ export class TicketDto {
 
   @Transform(({ obj }) => obj.session.id)
   @Expose()
-  session_id: string;
+  sessionId: string;
 }

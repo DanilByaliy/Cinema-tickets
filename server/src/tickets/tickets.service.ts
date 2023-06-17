@@ -13,8 +13,8 @@ export class TicketsService {
   ) {}
 
   async create(body: CreateTicketDto) {
-    const { session_id } = body;
-    const session = await this.sessionsService.findOne(session_id);
+    const { sessionId } = body;
+    const session = await this.sessionsService.findOne(sessionId);
     const ticket = this.repo.create(body);
     ticket.session = session;
     return this.repo.save(ticket);

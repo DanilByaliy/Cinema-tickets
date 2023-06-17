@@ -6,58 +6,78 @@ import { createWriteStream } from 'fs';
 import { readFile, unlink, writeFile } from 'fs/promises';
 import * as sharp from 'sharp';
 import * as PDFDocument from 'pdfkit';
+import { Seat } from 'src/interfaces/seat.interface';
 
 @Injectable()
 export class FilesService {
-  async saveImage(file: Express.Multer.File) {
-    const mimetype = file.mimetype;
+  async saveImage(image: Express.Multer.File) {
+    this.validateImageType(image);
+    const fileName = this.generateUniqueWebPImageName();
+    await this.storeImage(image.buffer, fileName);
+    return fileName;
+  }
 
+  private validateImageType(image: Express.Multer.File) {
+    const mimetype = image.mimetype;
     if (!mimetype.includes('image')) {
       throw new HttpException(
         'Unsupported media type. Only image files are allowed.',
         HttpStatus.UNSUPPORTED_MEDIA_TYPE,
       );
     }
-    const fileName = uuid.v4() + '.webp';
-    const filePath = resolve('static', fileName);
-    const buffer = await this.convertToWebP(file.buffer);
-
-    try {
-      await writeFile(filePath, buffer);
-      return fileName;
-    } catch (error) {
-      console.error(error);
-    }
   }
 
-  async convertToWebP(file: Buffer): Promise<Buffer> {
+  private generateUniqueWebPImageName() {
+    return uuid.v4() + '.webp';
+  }
+
+  private async storeImage(buffer: Buffer, fileName: string) {
+    const filePath = resolve('static', fileName);
+    const convertedBuffer = await this.convertToWebP(buffer);
+    await writeFile(filePath, convertedBuffer);
+  }
+
+  private async convertToWebP(file: Buffer) {
     return sharp(file).webp().toBuffer();
   }
 
-  async convertToJpeg(imageWebPPath: string, imageJpegPath: string) {
-    const file = await readFile(imageWebPPath);
-    const buffer = await sharp(file).jpeg().toBuffer();
-    await writeFile(imageJpegPath, buffer);
+  private async convertToJpeg(file: Buffer) {
+    return sharp(file).jpeg().toBuffer();
   }
 
-  async createPDF(info: TicketInfo) {
+  async createPDFTickets(info: TicketInfo, seats: Seat[]) {
+    const imageJpegPath = await this.convertImageToJpegAndSave(info.poster);
+    info.poster = imageJpegPath;
+
+    const files = await Promise.all(
+      seats.map((seat) => this.createPDFTicket({ ...seat, ...info })),
+    );
+
+    unlink(imageJpegPath);
+    return files;
+  }
+
+  private async convertImageToJpegAndSave(poster: string) {
+    const imageWebPPath = resolve('static', poster);
+    const imageJpegPath = imageWebPPath.replace('webp', 'jpeg');
+
+    const webpBuffer = await readFile(imageWebPPath);
+    const jpegBuffer = await this.convertToJpeg(webpBuffer);
+    await writeFile(imageJpegPath, jpegBuffer);
+    return imageJpegPath;
+  }
+
+  private async createPDFTicket(info: TicketInfo & Seat) {
     const name = 'ticket_' + uuid.v4() + '.pdf';
     const path = resolve('pdfs', name);
 
-    const imageWebPPath = resolve('static', info.image);
-    const imageJpegPath = imageWebPPath.replace('webp', 'jpeg');
-    await this.convertToJpeg(imageWebPPath, imageJpegPath);
-    info.image = imageJpegPath;
-
-    const pdfDoc = new PDFDocument();
-    this.drawTicket(pdfDoc, info);
+    const pdfDoc = this.drawTicket(info);
     await this.savePdfToFile(pdfDoc, path);
 
-    unlink(imageJpegPath);
     return { name, path };
   }
 
-  savePdfToFile(pdf: typeof PDFDocument, fileName: string): Promise<void> {
+  private savePdfToFile(pdf: typeof PDFDocument, fileName: string) {
     return new Promise<void>((resolve) => {
       let pendingStepCount = 2;
       const stepFinished = () => {
@@ -75,8 +95,9 @@ export class FilesService {
     });
   }
 
-  drawTicket(pdfDoc: typeof PDFDocument, info: TicketInfo) {
-    const filePath = resolve('static', info.image);
+  private drawTicket(info: TicketInfo & Seat) {
+    const pdfDoc = new PDFDocument();
+    const filePath = resolve('static', info.poster);
     pdfDoc.image(filePath, {
       fit: [250, 300],
       align: 'center',
@@ -84,9 +105,10 @@ export class FilesService {
     });
     pdfDoc.fontSize(22);
     pdfDoc.text('Cinema-tickets', 350, 100);
-    pdfDoc.text(info.movie);
+    pdfDoc.text(info.title);
     pdfDoc.text(`Your row: ${info.row}`);
     pdfDoc.text(`Your seat: ${info.seat}`);
     pdfDoc.text(`${info.date}, ${info.time}`);
+    return pdfDoc;
   }
 }

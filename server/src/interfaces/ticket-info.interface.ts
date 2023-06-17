@@ -1,8 +1,6 @@
 export interface TicketInfo {
-  movie: string;
-  row: number;
-  seat: number;
+  title: string;
   date: string;
   time: string;
-  image: string;
+  poster: string;
 }
