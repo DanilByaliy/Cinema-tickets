@@ -32,12 +32,12 @@ export class OrdersService {
     this.createPDFTicketsAndSend(order.customer, info, seats);
   }
 
-  async createPDFTicketsAndSend(
+  private async createPDFTicketsAndSend(
     recipient: string,
     info: TicketInfo,
     seats: Seat[],
   ) {
-    const files = await this.filesService.createPDFs(info, seats);
+    const files = await this.filesService.createPDFTickets(info, seats);
     this.emailsService.send(recipient, files);
   }
 }

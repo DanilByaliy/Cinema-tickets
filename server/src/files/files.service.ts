@@ -31,29 +31,37 @@ export class FilesService {
     }
   }
 
-  async convertToWebP(file: Buffer): Promise<Buffer> {
+  private async convertToWebP(file: Buffer) {
     return sharp(file).webp().toBuffer();
   }
 
-  async convertToJpeg(imageWebPPath: string, imageJpegPath: string) {
-    const file = await readFile(imageWebPPath);
-    const buffer = await sharp(file).jpeg().toBuffer();
-    await writeFile(imageJpegPath, buffer);
+  private async convertToJpeg(file: Buffer) {
+    return sharp(file).jpeg().toBuffer();
   }
 
-  async createPDFs(info: TicketInfo, seats: Seat[]) {
-    const imageJpegPath = await this.convertPosterToJpeg(info.poster);
+  async createPDFTickets(info: TicketInfo, seats: Seat[]) {
+    const imageJpegPath = await this.convertImageToJpegAndSave(info.poster);
     info.poster = imageJpegPath;
 
     const files = await Promise.all(
-      seats.map((seat) => this.createPDF({ ...seat, ...info })),
+      seats.map((seat) => this.createPDFTicket({ ...seat, ...info })),
     );
 
     unlink(imageJpegPath);
     return files;
   }
 
-  async createPDF(info: TicketInfo & Seat) {
+  private async convertImageToJpegAndSave(poster: string) {
+    const imageWebPPath = resolve('static', poster);
+    const imageJpegPath = imageWebPPath.replace('webp', 'jpeg');
+
+    const webpBuffer = await readFile(imageWebPPath);
+    const jpegBuffer = await this.convertToJpeg(webpBuffer);
+    await writeFile(imageJpegPath, jpegBuffer);
+    return imageJpegPath;
+  }
+
+  private async createPDFTicket(info: TicketInfo & Seat) {
     const name = 'ticket_' + uuid.v4() + '.pdf';
     const path = resolve('pdfs', name);
 
@@ -63,14 +71,7 @@ export class FilesService {
     return { name, path };
   }
 
-  async convertPosterToJpeg(poster: string) {
-    const imageWebPPath = resolve('static', poster);
-    const imageJpegPath = imageWebPPath.replace('webp', 'jpeg');
-    await this.convertToJpeg(imageWebPPath, imageJpegPath);
-    return imageJpegPath;
-  }
-
-  savePdfToFile(pdf: typeof PDFDocument, fileName: string): Promise<void> {
+  private savePdfToFile(pdf: typeof PDFDocument, fileName: string) {
     return new Promise<void>((resolve) => {
       let pendingStepCount = 2;
       const stepFinished = () => {
@@ -88,7 +89,7 @@ export class FilesService {
     });
   }
 
-  drawTicket(info: TicketInfo & Seat) {
+  private drawTicket(info: TicketInfo & Seat) {
     const pdfDoc = new PDFDocument();
     const filePath = resolve('static', info.poster);
     pdfDoc.image(filePath, {
