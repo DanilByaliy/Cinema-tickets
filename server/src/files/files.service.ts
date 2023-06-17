@@ -41,17 +41,25 @@ export class FilesService {
     await writeFile(imageJpegPath, buffer);
   }
 
+  async createPDFs(info: TicketInfo, seats: Seat[]) {
+    const imageJpegPath = await this.convertPosterToJpeg(info.poster);
+    info.poster = imageJpegPath;
+
+    const files = await Promise.all(
+      seats.map((seat) => this.createPDF({ ...seat, ...info })),
+    );
+
+    unlink(imageJpegPath);
+    return files;
+  }
+
   async createPDF(info: TicketInfo & Seat) {
     const name = 'ticket_' + uuid.v4() + '.pdf';
     const path = resolve('pdfs', name);
 
-    const imageJpegPath = await this.convertPosterToJpeg(info.poster);
-    info.poster = imageJpegPath;
-
     const pdfDoc = this.drawTicket(info);
     await this.savePdfToFile(pdfDoc, path);
 
-    unlink(imageJpegPath);
     return { name, path };
   }
 

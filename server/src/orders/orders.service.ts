@@ -37,10 +37,7 @@ export class OrdersService {
     info: TicketInfo,
     seats: Seat[],
   ) {
-    const files = await Promise.all(
-      seats.map((seat) => this.filesService.createPDF({ ...seat, ...info })),
-    );
-
+    const files = await this.filesService.createPDFs(info, seats);
     this.emailsService.send(recipient, files);
   }
 }
