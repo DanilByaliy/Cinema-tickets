@@ -15,7 +15,7 @@ export class MoviesService {
   async create(movieDto: CreateMovieDto, file: Express.Multer.File) {
     const fileName = await this.filesService.saveImage(file);
 
-    const movie = this.repo.create({ ...movieDto, picture: fileName });
+    const movie = this.repo.create({ ...movieDto, poster: fileName });
     return this.repo.save(movie);
   }
 

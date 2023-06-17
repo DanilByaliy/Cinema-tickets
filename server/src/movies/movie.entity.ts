@@ -22,7 +22,7 @@ export class Movie {
   description: string;
 
   @Column()
-  picture: string;
+  poster: string;
 
   @OneToMany(() => Session, (session) => session.movie)
   sessions: Session[];

@@ -9,8 +9,8 @@ import * as PDFDocument from 'pdfkit';
 
 @Injectable()
 export class FilesService {
-  async saveImage(file: Express.Multer.File) {
-    const mimetype = file.mimetype;
+  async saveImage(image: Express.Multer.File) {
+    const mimetype = image.mimetype;
 
     if (!mimetype.includes('image')) {
       throw new HttpException(
@@ -20,7 +20,7 @@ export class FilesService {
     }
     const fileName = uuid.v4() + '.webp';
     const filePath = resolve('static', fileName);
-    const buffer = await this.convertToWebP(file.buffer);
+    const buffer = await this.convertToWebP(image.buffer);
 
     try {
       await writeFile(filePath, buffer);
@@ -44,10 +44,11 @@ export class FilesService {
     const name = 'ticket_' + uuid.v4() + '.pdf';
     const path = resolve('pdfs', name);
 
-    const imageWebPPath = resolve('static', info.image);
+    const imageWebPPath = resolve('static', info.poster);
     const imageJpegPath = imageWebPPath.replace('webp', 'jpeg');
     await this.convertToJpeg(imageWebPPath, imageJpegPath);
-    info.image = imageJpegPath;
+    info.poster = imageJpegPath;
+    console.log(info.poster);
 
     const pdfDoc = new PDFDocument();
     this.drawTicket(pdfDoc, info);
@@ -76,7 +77,7 @@ export class FilesService {
   }
 
   drawTicket(pdfDoc: typeof PDFDocument, info: TicketInfo) {
-    const filePath = resolve('static', info.image);
+    const filePath = resolve('static', info.poster);
     pdfDoc.image(filePath, {
       fit: [250, 300],
       align: 'center',
@@ -84,7 +85,7 @@ export class FilesService {
     });
     pdfDoc.fontSize(22);
     pdfDoc.text('Cinema-tickets', 350, 100);
-    pdfDoc.text(info.movie);
+    pdfDoc.text(info.title);
     pdfDoc.text(`Your row: ${info.row}`);
     pdfDoc.text(`Your seat: ${info.seat}`);
     pdfDoc.text(`${info.date}, ${info.time}`);

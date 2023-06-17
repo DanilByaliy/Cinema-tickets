@@ -21,15 +21,12 @@ export class OrdersService {
     const {
       time,
       date,
-      movie: { title, picture },
+      movie: { title, poster },
     } = await this.sessionsService.findOneIncludesMovie(sessionId);
-    const info = { time, date, movie: title, image: picture };
+    const info = { time, date, title, poster };
 
     for (const seat of seats) {
-      await this.ticketsService.create({
-        ...seat,
-        session_id: sessionId,
-      });
+      await this.ticketsService.create({ ...seat, sessionId });
     }
 
     this.createPDFTicketsAndSend(order.customer, info, seats);
