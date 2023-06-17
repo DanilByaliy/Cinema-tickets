@@ -11,24 +11,30 @@ import { Seat } from 'src/interfaces/seat.interface';
 @Injectable()
 export class FilesService {
   async saveImage(image: Express.Multer.File) {
-    const mimetype = image.mimetype;
+    this.validateImageType(image);
+    const fileName = this.generateUniqueWebPImageName();
+    await this.storeImage(image.buffer, fileName);
+    return fileName;
+  }
 
+  private validateImageType(image: Express.Multer.File) {
+    const mimetype = image.mimetype;
     if (!mimetype.includes('image')) {
       throw new HttpException(
         'Unsupported media type. Only image files are allowed.',
         HttpStatus.UNSUPPORTED_MEDIA_TYPE,
       );
     }
-    const fileName = uuid.v4() + '.webp';
-    const filePath = resolve('static', fileName);
-    const buffer = await this.convertToWebP(image.buffer);
+  }
 
-    try {
-      await writeFile(filePath, buffer);
-      return fileName;
-    } catch (error) {
-      console.error(error);
-    }
+  private generateUniqueWebPImageName() {
+    return uuid.v4() + '.webp';
+  }
+
+  private async storeImage(buffer: Buffer, fileName: string) {
+    const filePath = resolve('static', fileName);
+    const convertedBuffer = await this.convertToWebP(buffer);
+    await writeFile(filePath, convertedBuffer);
   }
 
   private async convertToWebP(file: Buffer) {
