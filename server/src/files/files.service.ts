@@ -45,18 +45,21 @@ export class FilesService {
     const name = 'ticket_' + uuid.v4() + '.pdf';
     const path = resolve('pdfs', name);
 
-    const imageWebPPath = resolve('static', info.poster);
-    const imageJpegPath = imageWebPPath.replace('webp', 'jpeg');
-    await this.convertToJpeg(imageWebPPath, imageJpegPath);
+    const imageJpegPath = await this.convertPosterToJpeg(info.poster);
     info.poster = imageJpegPath;
-    console.log(info.poster);
 
-    const pdfDoc = new PDFDocument();
-    this.drawTicket(pdfDoc, info);
+    const pdfDoc = this.drawTicket(info);
     await this.savePdfToFile(pdfDoc, path);
 
     unlink(imageJpegPath);
     return { name, path };
+  }
+
+  async convertPosterToJpeg(poster: string) {
+    const imageWebPPath = resolve('static', poster);
+    const imageJpegPath = imageWebPPath.replace('webp', 'jpeg');
+    await this.convertToJpeg(imageWebPPath, imageJpegPath);
+    return imageJpegPath;
   }
 
   savePdfToFile(pdf: typeof PDFDocument, fileName: string): Promise<void> {
@@ -77,7 +80,8 @@ export class FilesService {
     });
   }
 
-  drawTicket(pdfDoc: typeof PDFDocument, info: TicketInfo & Seat) {
+  drawTicket(info: TicketInfo & Seat) {
+    const pdfDoc = new PDFDocument();
     const filePath = resolve('static', info.poster);
     pdfDoc.image(filePath, {
       fit: [250, 300],
@@ -90,5 +94,6 @@ export class FilesService {
     pdfDoc.text(`Your row: ${info.row}`);
     pdfDoc.text(`Your seat: ${info.seat}`);
     pdfDoc.text(`${info.date}, ${info.time}`);
+    return pdfDoc;
   }
 }
