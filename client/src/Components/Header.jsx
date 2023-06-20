@@ -6,7 +6,7 @@ function Header() {
 
   return (
     <header>
-      <Navigation title={title}/>
+      <Navigation title={title} />
       <Presentation title={title} />
     </header>
   );

@@ -1,7 +1,7 @@
 import { Card } from 'react-bootstrap';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 
-function MovieCard({movie, serverURL}) {
+function MovieCard({ movie, serverURL }) {
   return (
     <Card>
       <Card.Img
@@ -14,7 +14,7 @@ function MovieCard({movie, serverURL}) {
         <Card.Subtitle>{movie.genre}</Card.Subtitle>
       </Card.Body>
     </Card>
-  )
+  );
 }
 
 MovieCard.propTypes = {
@@ -25,6 +25,6 @@ MovieCard.propTypes = {
     poster: PropTypes.string.isRequired,
   }).isRequired,
   serverURL: PropTypes.string.isRequired,
-}
+};
 
 export default MovieCard;
