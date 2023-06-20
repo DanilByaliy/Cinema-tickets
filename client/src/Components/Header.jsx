@@ -1,4 +1,5 @@
 import Navigation from './Navigation';
+import Presentation from './Presentation';
 
 function Header() {
   const title = 'CinemaFan';
@@ -6,6 +7,7 @@ function Header() {
   return (
     <header>
       <Navigation title={title}/>
+      <Presentation title={title} />
     </header>
   );
 }
