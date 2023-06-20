@@ -18,3 +18,10 @@
   color: aliceblue;
   text-align: center;
 }
+
+.movie-row {
+  align-items: center;
+  padding: 2em;
+  text-align: center;
+  border-bottom: #817f7f 1px solid;
+}
