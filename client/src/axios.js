@@ -1,7 +1,8 @@
 import axios from 'axios';
+import serverURL from './constants';
 
 const instance = axios.create({
-  baseURL: `${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}`,
+  baseURL: serverURL,
 });
 
 export default instance;
