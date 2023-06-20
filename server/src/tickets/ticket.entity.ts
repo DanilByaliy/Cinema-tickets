@@ -12,9 +12,6 @@ export class Ticket {
   @Column()
   seat: number;
 
-  @Column()
-  price: number;
-
   @ManyToOne(() => Session, (session) => session.tickets)
   session: Session;
 }

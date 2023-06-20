@@ -1,4 +1,10 @@
-import { IsString, IsDateString, IsMilitaryTime } from 'class-validator';
+import {
+  IsString,
+  IsDateString,
+  IsMilitaryTime,
+  IsNumber,
+  Min,
+} from 'class-validator';
 
 export class CreateSessionDto {
   @IsString()
@@ -12,4 +18,8 @@ export class CreateSessionDto {
 
   @IsMilitaryTime()
   time: string;
+
+  @Min(50)
+  @IsNumber()
+  ticketPrice: number;
 }
