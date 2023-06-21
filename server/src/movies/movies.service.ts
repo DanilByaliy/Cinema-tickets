@@ -29,8 +29,8 @@ export class MoviesService {
   }
 
   async find(page: number) {
-    const take = 2;
-    const skip = (page - 1) * 2;
+    const take = 8;
+    const skip = (page - 1) * take;
 
     const [result, total] = await this.repo.findAndCount({
       relations: { sessions: true },
