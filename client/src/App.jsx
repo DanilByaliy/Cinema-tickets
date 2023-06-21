@@ -1,13 +1,13 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from './Components/Header';
-import MoviesPage from './Pages/movies';
+import Router from './Router/index';
 
 function App() {
   return (
     <div className="App">
       <Header />
-      <MoviesPage />
+      <Router />
     </div>
   );
 }
