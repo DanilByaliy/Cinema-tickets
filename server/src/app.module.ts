@@ -26,10 +26,13 @@ import { OrdersModule } from './orders/orders.module';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
         return {
-          type: 'sqlite',
-          database: config.get<string>('DB_NAME'),
-          entities: [Movie, Session, Ticket],
+          type: 'postgres',
+          host: config.get<string>('DB_HOST'),
+          port: config.get<number>('DB_PORT'),
+          username: config.get<string>('DB_USERNAME'),
+          password: config.get<string>('DB_PASSWORD'),
           synchronize: true,
+          entities: [Movie, Session, Ticket],
         };
       },
     }),
