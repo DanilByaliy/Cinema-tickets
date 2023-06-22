@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 function Presentation({ title }) {
   return (
-    <Row className="presentation">
+    <Row className="presentation m-0">
       <Col xs={12} md={{ span: 6, offset: 3 }}>
         <p>
           <strong>{title}</strong> - найкращий вибір для любителів кіно. У нас
