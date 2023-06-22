@@ -25,3 +25,35 @@
   text-align: center;
   border-bottom: #817f7f 1px solid;
 }
+
+.footer {
+  padding: 3em;
+  background-color: #343434;
+}
+
+.footer a {
+  color: #ccc;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.footer li {
+  flex: 1;
+}
+
+.footer li a {
+  display: block;
+}
+
+.footer a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.footer p {
+  color: #ccc;
+}
+
+.copyright {
+  border-top: 1px solid #ccc;
+}
