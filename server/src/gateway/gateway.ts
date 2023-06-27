@@ -1,11 +1,12 @@
 import { OnModuleInit } from '@nestjs/common';
 import {
+  ConnectedSocket,
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway()
 export class MyGateway implements OnModuleInit {
@@ -20,9 +21,9 @@ export class MyGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('selectedSeat')
-  onSelectedSeat(@MessageBody() body: any) {
+  onSelectedSeat(@MessageBody() body: any, @ConnectedSocket() socket: Socket) {
     const { sessionId: roomId, row, seat } = body;
-    this.server.to(roomId).emit('onSelectedSeat', {
+    socket.broadcast.to(roomId).emit('onSelectedSeat', {
       selectedSeat: { row, seat },
     });
   }
