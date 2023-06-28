@@ -27,6 +27,11 @@ export class UsersController {
     return user;
   }
 
+  @Post('/signout')
+  signout(@Session() session: any) {
+    session.userId = null;
+  }
+
   @Post()
   createUser(@Body() body: CreateUserDto) {
     return this.usersService.create(body);
