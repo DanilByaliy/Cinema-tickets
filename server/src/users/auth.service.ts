@@ -12,7 +12,7 @@ export class AuthService {
 
   async signup(body: CreateUserDto) {
     const { email, password } = body;
-    const existingUser = this.usersService.findOneByEmail(email);
+    const existingUser = await this.usersService.findOneByEmail(email);
     if (existingUser) throw new BadRequestException('Email in use');
 
     const salt = randomBytes(8).toString('hex');
