@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto } from './dtos/create-user.dto';
+import { ChangeRoleDto } from './dtos/change-role.dto';
 
 @Injectable()
 export class UsersService {
@@ -20,5 +21,18 @@ export class UsersService {
     const user = await this.repo.findOneBy({ email });
     if (!user) return null;
     return user;
+  }
+
+  async findOne(id: string) {
+    const user = await this.repo.findOneBy({ id });
+    if (!user) return null;
+    return user;
+  }
+
+  async changeRole(body: ChangeRoleDto) {
+    const { userId, role } = body;
+    const user = await this.findOne(userId);
+    user.role = role;
+    return this.repo.save(user);
   }
 }
