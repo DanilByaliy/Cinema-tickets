@@ -1,5 +1,8 @@
 export interface WebsocketMessage {
   sessionId: string;
-  row: number;
-  seat: number;
+  seat: {
+    row: number;
+    seat: number;
+  };
+  isOccupied: boolean;
 }

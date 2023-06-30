@@ -9,8 +9,12 @@ import {
 import { Server, Socket } from 'socket.io';
 import { WebsocketMessage } from 'src/interfaces/websocket-message.interface';
 
-@WebSocketGateway()
-export class MyGateway implements OnModuleInit {
+@WebSocketGateway({
+  cors: {
+    origin: ['http://localhost:3001'],
+  },
+})
+export class SeatSelectionGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
 
@@ -18,17 +22,21 @@ export class MyGateway implements OnModuleInit {
     this.server.on('connection', (socket) => {
       const { sessionId: roomId } = socket.handshake.query;
       socket.join(roomId);
+
+      socket.on('disconnect', () => {
+        if (typeof roomId === 'string') socket.leave(roomId);
+      });
     });
   }
 
-  @SubscribeMessage('selectedSeat')
-  onSelectedSeat(
+  @SubscribeMessage('changingSeatStatus')
+  onSeatStatusChange(
     @MessageBody() body: WebsocketMessage,
     @ConnectedSocket() socket: Socket,
   ) {
-    const { sessionId: roomId, row, seat } = body;
-    socket.broadcast.to(roomId).emit('onSelectedSeat', {
-      selectedSeat: { row, seat },
-    });
+    const { sessionId: roomId, seat, isOccupied } = body;
+    socket.broadcast
+      .to(roomId)
+      .emit('onSeatStatusChange', { isOccupied, seat });
   }
 }
