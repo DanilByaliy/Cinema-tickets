@@ -7,6 +7,7 @@ import { SessionsService } from 'src/sessions/sessions.service';
 import { TicketsService } from 'src/tickets/tickets.service';
 import { TicketInfo } from 'src/interfaces/ticket-info.interface';
 import { Seat } from 'src/interfaces/seat.interface';
+import { PaymentRequestBody } from 'src/interfaces/payment-request-body.interface';
 import Stripe from 'stripe';
 
 @Injectable()
@@ -49,5 +50,15 @@ export class OrdersService {
   ) {
     const files = await this.filesService.createPDFTickets(info, seats);
     this.emailsService.send(recipient, files);
+  }
+
+  createPayment(paymentRequestBody: PaymentRequestBody) {
+    const { quantity, ticketPrice, currency } = paymentRequestBody;
+    const amount = quantity * ticketPrice * 100;
+
+    return this.stripe.paymentIntents.create({
+      amount,
+      currency,
+    });
   }
 }
