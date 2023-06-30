@@ -14,7 +14,7 @@ import { WebsocketMessage } from 'src/interfaces/websocket-message.interface';
     origin: ['http://localhost:3001'],
   },
 })
-export class MyGateway implements OnModuleInit {
+export class SeatSelectionGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
 

@@ -15,7 +15,7 @@ import { EmailsService } from './emails/emails.service';
 import { EmailsModule } from './emails/emails.module';
 import { join } from 'path';
 import { OrdersModule } from './orders/orders.module';
-import { GatewayModule } from './gateway/gateway.module';
+import { SeatSelectionModule } from './seat-selection/seat-selection.module';
 
 @Module({
   imports: [
@@ -46,7 +46,7 @@ import { GatewayModule } from './gateway/gateway.module';
     FilesModule,
     EmailsModule,
     OrdersModule,
-    GatewayModule,
+    SeatSelectionModule,
   ],
   controllers: [AppController],
   providers: [AppService, EmailsService],
