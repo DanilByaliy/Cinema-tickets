@@ -21,14 +21,14 @@ export class MyGateway implements OnModuleInit {
     });
   }
 
-  @SubscribeMessage('selectedSeat')
-  onSelectedSeat(
+  @SubscribeMessage('changingSeatStatus')
+  onSeatStatusChange(
     @MessageBody() body: WebsocketMessage,
     @ConnectedSocket() socket: Socket,
   ) {
-    const { sessionId: roomId, row, seat } = body;
-    socket.broadcast.to(roomId).emit('onSelectedSeat', {
-      selectedSeat: { row, seat },
-    });
+    const { sessionId: roomId, seat, isOccupied } = body;
+    socket.broadcast
+      .to(roomId)
+      .emit('onSeatStatusChange', { isOccupied, seat });
   }
 }
