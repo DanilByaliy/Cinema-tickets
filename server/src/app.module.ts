@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { AppController } from './app.controller';
@@ -39,6 +40,7 @@ import { join } from 'path';
         };
       },
     }),
+    CacheModule.register(),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'static'),
     }),
