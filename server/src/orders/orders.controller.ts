@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { OrderDto } from './dtos/order.dto';
-import { PaymentRequestBody } from 'src/interfaces/payment-request-body.interface';
+import { PaymentRequest } from 'src/orders/dtos/payment-request.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -13,7 +13,7 @@ export class OrdersController {
   }
 
   @Post('/payment')
-  createPayment(@Body() paymentRequestBody: PaymentRequestBody) {
-    return this.ordersService.createPayment(paymentRequestBody);
+  createPayment(@Body() paymentRequest: PaymentRequest) {
+    return this.ordersService.createPayment(paymentRequest);
   }
 }
