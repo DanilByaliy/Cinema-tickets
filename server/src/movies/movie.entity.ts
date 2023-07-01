@@ -21,6 +21,9 @@ export class Movie {
   @Column()
   description: string;
 
+  @Column()
+  poster: string;
+
   @OneToMany(() => Session, (session) => session.movie)
   sessions: Session[];
 }

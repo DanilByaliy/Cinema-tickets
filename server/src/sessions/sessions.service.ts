@@ -30,6 +30,16 @@ export class SessionsService {
     return session;
   }
 
+  async findOneIncludesMovie(id: string) {
+    const session = await this.repo.findOne({
+      where: { id },
+      relations: { movie: true },
+    });
+    if (!session)
+      throw new NotFoundException(`Session with id: ${id} not found`);
+    return session;
+  }
+
   find() {
     return this.repo.find();
   }

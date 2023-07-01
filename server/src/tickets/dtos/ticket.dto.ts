@@ -10,10 +10,7 @@ export class TicketDto {
   @Expose()
   seat: number;
 
-  @Expose()
-  price: number;
-
   @Transform(({ obj }) => obj.session.id)
   @Expose()
-  session_id: string;
+  sessionId: string;
 }
