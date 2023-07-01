@@ -35,7 +35,7 @@ import { join } from 'path';
           username: config.get<string>('DB_USERNAME'),
           password: config.get<string>('DB_PASSWORD'),
           synchronize: true,
-          entities: [Movie, Session, Ticket],
+          entities: [Movie, Session, Ticket, User],
         };
       },
     }),
