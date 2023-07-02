@@ -6,13 +6,16 @@ import {
   Param,
   Patch,
   Post,
+  UseInterceptors,
 } from '@nestjs/common';
 import { SessionsService } from './sessions.service';
 import { CreateSessionDto } from './dtos/create-session.dto';
 import { UpdateSessionDto } from './dtos/update-session.dto';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { SessionDto } from './dtos/session.dto';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
+@UseInterceptors(CacheInterceptor)
 @Controller('sessions')
 export class SessionsController {
   constructor(private sessionsService: SessionsService) {}
@@ -23,6 +26,7 @@ export class SessionsController {
     return this.sessionsService.create(body);
   }
 
+  @CacheTTL(60000)
   @Get('/:id')
   findSession(@Param('id') id: string) {
     return this.sessionsService.findOne(id);

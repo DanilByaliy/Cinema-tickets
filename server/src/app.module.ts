@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { AppController } from './app.controller';
@@ -18,6 +19,7 @@ import { EmailsModule } from './emails/emails.module';
 import { OrdersModule } from './orders/orders.module';
 import { SeatSelectionModule } from './seat-selection/seat-selection.module';
 import { join } from 'path';
+import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
   imports: [
@@ -36,6 +38,17 @@ import { join } from 'path';
           password: config.get<string>('DB_PASSWORD'),
           synchronize: true,
           entities: [Movie, Session, Ticket, User],
+        };
+      },
+    }),
+    CacheModule.register({
+      isGlobal: true,
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        return {
+          store: redisStore,
+          url: config.get('REDIS_URL'),
+          max: 100,
         };
       },
     }),
