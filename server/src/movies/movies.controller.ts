@@ -14,7 +14,9 @@ import { CreateMovieDto } from './dtos/create-movie.dto';
 import { MoviesService } from './movies.service';
 import { UpdateMovieDto } from './dtos/update-movie.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
+@UseInterceptors(CacheInterceptor)
 @Controller('movies')
 export class MoviesController {
   constructor(private moviesService: MoviesService) {}
@@ -33,6 +35,7 @@ export class MoviesController {
     return this.moviesService.findOne(id);
   }
 
+  @CacheTTL(60000)
   @Get()
   findAllMovies(@Query('page') page: string) {
     return this.moviesService.find(parseInt(page));
