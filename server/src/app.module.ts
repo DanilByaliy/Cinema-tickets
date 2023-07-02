@@ -19,6 +19,7 @@ import { EmailsModule } from './emails/emails.module';
 import { OrdersModule } from './orders/orders.module';
 import { SeatSelectionModule } from './seat-selection/seat-selection.module';
 import { join } from 'path';
+import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
   imports: [
@@ -40,7 +41,17 @@ import { join } from 'path';
         };
       },
     }),
-    CacheModule.register(),
+    CacheModule.register({
+      isGlobal: true,
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        return {
+          store: redisStore,
+          url: config.get('REDIS_URL'),
+          max: 100,
+        };
+      },
+    }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'static'),
     }),
