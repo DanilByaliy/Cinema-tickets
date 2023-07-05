@@ -54,4 +54,13 @@ export class AuthService {
     }
     return user;
   }
+
+  async verify(id: string, token: string) {
+    const receivedToten = await this.cacheService.get(id);
+    if (!receivedToten || receivedToten !== token)
+      throw new BadRequestException('Invalid link');
+
+    await this.usersService.verifyUserById(id);
+    await this.cacheService.del(id);
+  }
 }

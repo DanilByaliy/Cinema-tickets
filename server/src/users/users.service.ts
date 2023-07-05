@@ -35,4 +35,10 @@ export class UsersService {
     user.role = role;
     return this.repo.save(user);
   }
+
+  async verifyUserById(id: string) {
+    const user = await this.findOne(id);
+    user.verified = true;
+    return this.repo.save(user);
+  }
 }
