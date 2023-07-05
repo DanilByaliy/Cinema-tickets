@@ -57,3 +57,12 @@
 .copyright {
   border-top: 1px solid #ccc;
 }
+
+.contacts div {
+  padding: 0.5em 0;
+  font-size: 1.2em;
+}
+
+.contacts a:link {
+  color: #000;
+}
