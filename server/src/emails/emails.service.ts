@@ -47,4 +47,22 @@ export class EmailsService {
       return error;
     }
   }
+
+  async sendVerificationLetter(reciver: string, userId: string, token: string) {
+    try {
+      const { messageId } = await this.transporter.sendMail({
+        to: reciver,
+        subject: 'Please confirm your account',
+        html: `<h1>Email Confirmation</h1>
+        <h2>Hello!</h2>
+        <p>Please confirm your email by clicking on the following link</p>
+        <a href=http://localhost:3000/auth/verify${userId}/${token}>Click here</a>
+        </div>`,
+      });
+      return messageId;
+    } catch (error) {
+      console.error(error);
+      return error;
+    }
+  }
 }
