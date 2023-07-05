@@ -16,7 +16,7 @@ function MoviesPage() {
 
   return !error ? (
     <main>
-      <Row className='m-0'>
+      <Row className="m-0">
         <Col xs={12} md={{ span: 10, offset: 1 }}>
           {movies.map((movie) => (
             <Row xs={1} lg={3} className="movie-row">
