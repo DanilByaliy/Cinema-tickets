@@ -13,4 +13,7 @@ export class User {
 
   @Column('varchar', { default: 'USER' })
   role: 'USER' | 'ADMIN';
+
+  @Column('boolean', { default: false })
+  verified: boolean;
 }

@@ -2,8 +2,12 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  Inject,
 } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import { UsersService } from './users.service';
+import { EmailsService } from 'src/emails/emails.service';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -12,7 +16,12 @@ const scrypt = promisify(_scrypt);
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private emailsService: EmailsService,
+    @Inject(CACHE_MANAGER)
+    private cacheService: Cache,
+  ) {}
 
   async signup(body: CreateUserDto) {
     const { email, password } = body;
@@ -24,6 +33,11 @@ export class AuthService {
     const result = salt + '.' + hash.toString('hex');
 
     const user = await this.usersService.create({ email, password: result });
+
+    const token = randomBytes(32).toString('hex');
+    await this.emailsService.sendVerificationLetter(user.email, user.id, token);
+    await this.cacheService.set(user.id, token);
+
     return user;
   }
 
