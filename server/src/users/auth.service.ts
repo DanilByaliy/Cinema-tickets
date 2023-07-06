@@ -36,6 +36,12 @@ export class AuthService {
 
     const token = randomBytes(32).toString('hex');
     await this.emailsService.sendVerificationLetter(user.email, user.id, token);
+    const ttl = 5 * 60 * 1000;
+    await this.cacheService.set(user.id, token, ttl);
+    setTimeout(async () => {
+      const { verified } = await this.usersService.findOneByEmail(email);
+      if (!verified) await this.usersService.deleteByEmail(email);
+    }, ttl);
     await this.cacheService.set(user.id, token);
 
     return user;
@@ -56,6 +62,10 @@ export class AuthService {
   }
 
   async verify(id: string, token: string) {
+    const user = await this.usersService.findOne(id);
+    if (!user)
+      throw new BadRequestException('The verification link has timed out');
+
     const receivedToten = await this.cacheService.get(id);
     if (!receivedToten || receivedToten !== token)
       throw new BadRequestException('Invalid link');
