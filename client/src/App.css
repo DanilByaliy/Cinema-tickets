@@ -66,3 +66,18 @@
 .contacts a:link {
   color: #000;
 }
+
+.feedback {
+  padding: 3em;
+  background-color: #ccc;
+  border-radius: 3px;
+}
+
+.feedback input,
+.feedback textarea {
+  background-color: #b3b3b3;
+}
+
+.feedback button {
+  width: 100%;
+}
