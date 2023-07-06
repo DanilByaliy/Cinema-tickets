@@ -56,7 +56,7 @@ export class EmailsService {
         html: `<h1>Email Confirmation</h1>
         <h2>Hello!</h2>
         <p>Please confirm your email by clicking on the following link</p>
-        <a href=http://localhost:3000/auth/verify${userId}/${token}>Click here</a>
+        <a href=http://localhost:3000/auth/verify/${userId}/${token}>Click here</a>
         </div>`,
       });
       return messageId;
