@@ -62,13 +62,12 @@ export class AuthService {
   }
 
   async verify(id: string, token: string) {
-    const user = await this.usersService.findOne(id);
-    if (!user)
-      throw new BadRequestException('The verification link has timed out');
-
     const receivedToten = await this.cacheService.get(id);
-    if (!receivedToten || receivedToten !== token)
-      throw new BadRequestException('Invalid link');
+    const user = await this.usersService.findOne(id);
+
+    if (!receivedToten || !user)
+      throw new BadRequestException('The verification link has timed out');
+    if (receivedToten !== token) throw new BadRequestException('Invalid link');
 
     await this.usersService.verifyUserById(id);
     await this.cacheService.del(id);
