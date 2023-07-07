@@ -43,6 +43,11 @@ export class UsersController {
     session.userId = null;
   }
 
+  @Get('/verify/:id/:token')
+  async verify(@Param('id') id: string, @Param('token') token: string) {
+    await this.authService.verify(id, token);
+  }
+
   @Post()
   createUser(@Body() body: CreateUserDto) {
     return this.usersService.create(body);

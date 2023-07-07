@@ -29,10 +29,21 @@ export class UsersService {
     return user;
   }
 
+  async deleteByEmail(email: string) {
+    const user = await this.findOneByEmail(email);
+    await this.repo.remove(user);
+  }
+
   async changeRole(body: ChangeRoleDto) {
     const { userId, role } = body;
     const user = await this.findOne(userId);
     user.role = role;
+    return this.repo.save(user);
+  }
+
+  async verifyUserById(id: string) {
+    const user = await this.findOne(id);
+    user.verified = true;
     return this.repo.save(user);
   }
 }

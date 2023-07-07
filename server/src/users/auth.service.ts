@@ -2,8 +2,12 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  Inject,
 } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import { UsersService } from './users.service';
+import { EmailsService } from 'src/emails/emails.service';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -12,7 +16,12 @@ const scrypt = promisify(_scrypt);
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private emailsService: EmailsService,
+    @Inject(CACHE_MANAGER)
+    private cacheService: Cache,
+  ) {}
 
   async signup(body: CreateUserDto) {
     const { email, password } = body;
@@ -24,6 +33,17 @@ export class AuthService {
     const result = salt + '.' + hash.toString('hex');
 
     const user = await this.usersService.create({ email, password: result });
+
+    const token = randomBytes(32).toString('hex');
+    await this.emailsService.sendVerificationLetter(user.email, user.id, token);
+    const ttl = 5 * 60 * 1000;
+    await this.cacheService.set(user.id, token, ttl);
+    setTimeout(async () => {
+      const { verified } = await this.usersService.findOneByEmail(email);
+      if (!verified) await this.usersService.deleteByEmail(email);
+    }, ttl);
+    await this.cacheService.set(user.id, token);
+
     return user;
   }
 
@@ -39,5 +59,17 @@ export class AuthService {
       throw new BadRequestException('Bad password');
     }
     return user;
+  }
+
+  async verify(id: string, token: string) {
+    const receivedToten = await this.cacheService.get(id);
+    const user = await this.usersService.findOne(id);
+
+    if (!receivedToten || !user)
+      throw new BadRequestException('The verification link has timed out');
+    if (receivedToten !== token) throw new BadRequestException('Invalid link');
+
+    await this.usersService.verifyUserById(id);
+    await this.cacheService.del(id);
   }
 }
