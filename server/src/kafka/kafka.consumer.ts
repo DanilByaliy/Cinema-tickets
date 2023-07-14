@@ -8,6 +8,7 @@ import {
 } from 'kafkajs';
 import { IConsumer } from './consumer.interface';
 import { sleep } from './utils/sleep';
+import * as retry from 'async-retry';
 
 export class KafkaConsumer implements IConsumer {
   private readonly kafka: Kafka;
@@ -29,7 +30,22 @@ export class KafkaConsumer implements IConsumer {
     await this.consumer.run({
       eachMessage: async ({ message, partition }) => {
         this.logger.debug(`Processing message partition: ${partition}`);
-        await onMessage(message);
+        try {
+          await retry(async () => onMessage(message), {
+            retries: 3,
+            onRetry: (error, attempt) =>
+              this.logger.error(
+                `Error consuming message, executing retry ${attempt}/3...`,
+                error,
+              ),
+          });
+        } catch (err) {
+          this.logger.error(
+            'Error consuming message. Adding to dead letter queue...',
+            err,
+          );
+          await this.addMessageToDlq(message);
+        }
       },
     });
   }
