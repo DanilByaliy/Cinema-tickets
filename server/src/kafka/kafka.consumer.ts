@@ -9,14 +9,16 @@ import {
 import { IConsumer } from './consumer.interface';
 import { sleep } from './utils/sleep';
 import * as retry from 'async-retry';
+import { Model } from 'mongoose';
 
-export class KafkaConsumer implements IConsumer {
+export class KafkaConsumer<T> implements IConsumer {
   private readonly kafka: Kafka;
   private readonly consumer: Consumer;
   private readonly logger: Logger;
 
   constructor(
     private readonly topic: ConsumerSubscribeTopic,
+    private readonly deadLetterQueueModel: Model<T>,
     config: ConsumerConfig,
     broker: string,
   ) {
@@ -48,6 +50,14 @@ export class KafkaConsumer implements IConsumer {
         }
       },
     });
+  }
+
+  private async addMessageToDlq(message: KafkaMessage) {
+    const newDeadLetterQueue = new this.deadLetterQueueModel({
+      value: message.value,
+      topic: this.topic.topic,
+    });
+    newDeadLetterQueue.save();
   }
 
   async connect() {
