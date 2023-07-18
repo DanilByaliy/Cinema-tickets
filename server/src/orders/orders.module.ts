@@ -6,6 +6,7 @@ import { EmailsModule } from 'src/emails/emails.module';
 import { SessionsModule } from 'src/sessions/sessions.module';
 import { TicketsModule } from 'src/tickets/tickets.module';
 import { ConfigModule } from '@nestjs/config';
+import { KafkaModule } from 'src/kafka/kafka.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ConfigModule } from '@nestjs/config';
     SessionsModule,
     TicketsModule,
     ConfigModule,
+    KafkaModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],
