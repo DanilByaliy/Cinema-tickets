@@ -29,23 +29,18 @@ export class EmailsService {
   }
 
   async send(reciver: string, files: File[]) {
-    try {
-      const { messageId } = await this.transporter.sendMail({
-        to: reciver,
-        subject: 'Cinema-ticket',
-        text: 'Welcome to our cinema',
-        attachments: files.map((file) => {
-          return {
-            filename: file.name,
-            path: file.path,
-          };
-        }),
-      });
-      return messageId;
-    } catch (error) {
-      console.error(error);
-      return error;
-    }
+    const { messageId } = await this.transporter.sendMail({
+      to: reciver,
+      subject: 'Cinema-ticket',
+      text: 'Welcome to our cinema',
+      attachments: files.map((file) => {
+        return {
+          filename: file.name,
+          path: file.path,
+        };
+      }),
+    });
+    return messageId;
   }
 
   async sendVerificationLetter(reciver: string, userId: string, token: string) {
@@ -62,7 +57,7 @@ export class EmailsService {
       return messageId;
     } catch (error) {
       console.error(error);
-      return error;
+      throw error;
     }
   }
 }
