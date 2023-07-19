@@ -29,18 +29,17 @@ export class KafkaConsumer<T> implements IConsumer {
 
   async consume(onMessage: (message: KafkaMessage) => Promise<void>) {
     await this.consumer.subscribe(this.topic);
+    await this.processMessages(onMessage);
+  }
+
+  async processMessages(
+    onMessage: (message: KafkaMessage) => Promise<void>,
+  ): Promise<void> {
     await this.consumer.run({
       eachMessage: async ({ message, partition }) => {
         this.logger.debug(`Processing message partition: ${partition}`);
         try {
-          await retry(async () => onMessage(message), {
-            retries: 3,
-            onRetry: (error, attempt) =>
-              this.logger.error(
-                `Error consuming message, executing retry ${attempt}/3...`,
-                error,
-              ),
-          });
+          await this.retryMessageProcessing(onMessage, message);
         } catch (err) {
           this.logger.error(
             'Error consuming message. Adding to dead letter queue...',
@@ -49,6 +48,20 @@ export class KafkaConsumer<T> implements IConsumer {
           await this.addMessageToDlq(message);
         }
       },
+    });
+  }
+
+  async retryMessageProcessing(
+    onMessage: (message: KafkaMessage) => Promise<void>,
+    message: KafkaMessage,
+  ): Promise<void> {
+    await retry(async () => onMessage(message), {
+      retries: 3,
+      onRetry: (error, attempt) =>
+        this.logger.error(
+          `Error consuming message, executing retry ${attempt}/3...`,
+          error,
+        ),
     });
   }
 
