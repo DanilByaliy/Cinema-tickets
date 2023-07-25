@@ -5,6 +5,10 @@
   font-family: sans-serif;
 }
 
+main {
+  padding: 2em;
+}
+
 .presentation {
   background-image: url('../img/presentation.jpg');
   box-shadow: inset 0 0 10em #000;
@@ -80,4 +84,27 @@
 
 .feedback button {
   width: 100%;
+}
+
+.slider {
+  margin: 3em 0;
+  border: #000 1px solid;
+}
+
+.slider-slide {
+  max-height: 50rem;
+}
+
+.slider-caption {
+  overflow: hidden;
+  max-height: 12rem;
+  margin-bottom: 3em;
+}
+
+.slider-caption h3 {
+  font-size: 40px;
+}
+
+.slider-caption p {
+  font-size: 20px;
 }
