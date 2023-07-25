@@ -1,18 +1,10 @@
-import { useState, useEffect } from 'react';
 import { Row, Col, Button } from 'react-bootstrap';
-import getMovies from '../../services/moviesService';
 import MovieCard from './Components/MovieCard';
 import serverURL from '../../constants/index';
+import { useMovies } from '../../contexts/MoviesContext';
 
 function MoviesPage() {
-  const [movies, setMovies] = useState([]);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    getMovies('/movies', 1)
-      .then((res) => setMovies(res.data.data))
-      .catch((err) => setError(err));
-  }, []);
+  const [movies, error] = useMovies();
 
   return !error ? (
     <main>
