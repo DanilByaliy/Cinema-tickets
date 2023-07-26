@@ -108,3 +108,26 @@ main {
 .slider-caption p {
   font-size: 20px;
 }
+
+.gallery img {
+  width: 100%;
+}
+
+.gallery-main,
+.gallery-images {
+  margin: 1vw 0;
+}
+
+.gallery-main img {
+  height: 32vw;
+}
+
+.gallery-images > div {
+  cursor: pointer;
+  margin: 1vw 0;
+  transition: transform 1s;
+}
+
+.gallery-images > div:hover {
+  transform: scale(1.05);
+}
