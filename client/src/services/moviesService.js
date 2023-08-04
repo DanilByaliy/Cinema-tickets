@@ -1,10 +1,12 @@
 import axios from '../axios';
 
-const getMovies = (path, pageNumber) =>
-  axios.get(path, {
+const PATH = '/movies';
+
+const getMoviesByPage = (pageNumber) =>
+  axios.get(PATH, {
     params: {
       page: pageNumber,
     },
   });
 
-export default getMovies;
+export default getMoviesByPage;

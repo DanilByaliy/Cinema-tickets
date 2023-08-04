@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import getMovies from '../services/moviesService';
+import getMoviesByPage from '../services/moviesService';
 
 const MoviesContext = createContext(undefined);
 
@@ -10,7 +10,7 @@ export function MoviesProvider({ children }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    getMovies('/movies', 1)
+    getMoviesByPage(1)
       .then((res) => setMovies(res.data.data))
       .catch((err) => setError(err));
   }, []);
