@@ -32,6 +32,11 @@ export class SessionsController {
     return this.sessionsService.findOne(id);
   }
 
+  @Get('/date/:date')
+  findByDate(@Param('date') date: string) {
+    return this.sessionsService.findByDate(date);
+  }
+
   @Get()
   findAllSessions() {
     return this.sessionsService.find();
