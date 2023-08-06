@@ -22,7 +22,7 @@ services:
 
   app:
     container_name: app
-    build: .
+    image: bialyidanil/cinema-tickets-server:0.1
     ports:
      - 3000:3000
     volumes:
