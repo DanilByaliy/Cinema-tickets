@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { Session } from './session.entity';
 import { CreateSessionDto } from './dtos/create-session.dto';
 import { MoviesService } from 'src/movies/movies.service';
@@ -38,6 +42,18 @@ export class SessionsService {
     if (!session)
       throw new NotFoundException(`Session with id: ${id} not found`);
     return session;
+  }
+
+  findByDate(date: string) {
+    const today = new Date().toISOString().slice(0, 10);
+    if (date < today) {
+      throw new BadRequestException('Sessions date is out of date');
+    }
+
+    return this.repo.find({
+      where: { date: Like(`${date}%`) },
+      relations: { movie: true },
+    });
   }
 
   find() {
