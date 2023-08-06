@@ -27,6 +27,8 @@ services:
      - 3000:3000
     volumes:
       - ./app:/app
+    env_file:
+    - .env.development
     depends_on:
       - kafka
     restart: always
