@@ -3,13 +3,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Movie } from './movie.entity';
 import { CreateMovieDto } from './dtos/create-movie.dto';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class MoviesService {
-  constructor(@InjectRepository(Movie) private repo: Repository<Movie>) {}
+  constructor(
+    @InjectRepository(Movie) private repo: Repository<Movie>,
+    private filesService: FilesService,
+  ) {}
 
-  create(movieDto: CreateMovieDto) {
-    const movie = this.repo.create(movieDto);
+  async create(movieDto: CreateMovieDto, file: Express.Multer.File) {
+    const fileName = await this.filesService.saveImage(file);
+
+    const movie = this.repo.create({ ...movieDto, poster: fileName });
     return this.repo.save(movie);
   }
 
@@ -22,8 +28,21 @@ export class MoviesService {
     return movie;
   }
 
-  find() {
-    return this.repo.find({ relations: { sessions: true } });
+  async find(page: number) {
+    const take = 8;
+    const skip = (page - 1) * take;
+
+    const [result, total] = await this.repo.findAndCount({
+      relations: { sessions: true },
+      order: { title: 'DESC' },
+      take: take,
+      skip: skip,
+    });
+
+    return {
+      data: result,
+      count: total,
+    };
   }
 
   async update(id: string, attrs: Partial<Movie>) {

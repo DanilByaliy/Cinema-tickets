@@ -1,4 +1,5 @@
 import { IsString, IsNumber, Min, Max } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateMovieDto {
   @IsString()
@@ -13,6 +14,7 @@ export class CreateMovieDto {
   @IsNumber()
   @Min(1895)
   @Max(2023)
+  @Transform(({ value }) => parseInt(value))
   year: number;
 
   @IsString()

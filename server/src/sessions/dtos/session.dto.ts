@@ -13,6 +13,9 @@ export class SessionDto {
   @Expose()
   time: string;
 
+  @Expose()
+  ticketPrice: string;
+
   @Transform(({ obj }) => obj.movie.id)
   @Expose()
   movie_id: string;

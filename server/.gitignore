@@ -36,3 +36,7 @@ lerna-debug.log*
 
 # Sqlite DB
 *.sqlite
+
+.env.development
+/static
+/pdfs
