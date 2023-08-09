@@ -12,7 +12,7 @@ import { Seat } from 'src/interfaces/seat.interface';
 export class FilesService {
   async saveImage(image: Express.Multer.File) {
     this.validateFileType(image, 'image');
-    const fileName = this.generateUniqueWebPImageName();
+    const fileName = this.generateFullFileName('webp');
     await this.storeImage(image.buffer, fileName);
     return fileName;
   }
@@ -27,8 +27,9 @@ export class FilesService {
     }
   }
 
-  private generateUniqueWebPImageName() {
-    return uuid.v4() + '.webp';
+  private generateFullFileName(format: string, name?: string) {
+    const fileName = name || uuid.v4();
+    return `${fileName}.${format}`;
   }
 
   private async storeImage(buffer: Buffer, fileName: string) {
@@ -68,7 +69,7 @@ export class FilesService {
   }
 
   private async createPDFTicket(info: TicketInfo & Seat) {
-    const name = 'ticket_' + uuid.v4() + '.pdf';
+    const name = 'ticket_' + this.generateFullFileName('pdf');
     const path = resolve('pdfs', name);
 
     const pdfDoc = this.drawTicket(info);
