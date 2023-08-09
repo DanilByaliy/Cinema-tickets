@@ -29,22 +29,20 @@ export class TrailersController {
   ) {
     const videoPath = `videos/${id}.mp4`;
     const { size } = statSync(videoPath);
-    const videoRange = headers.range;
+    const videoRange = this.filesService.getVideoRange(headers, size);
+
     if (videoRange) {
-      const parts = videoRange.replace(/bytes=/, '').split('-');
-      const start = parseInt(parts[0], 10);
-      const end = parts[1] ? parseInt(parts[1], 10) : size - 1;
-      const chunksize = end - start + 1;
+      const { start, end, chunksize } = videoRange;
+      const headers = {
+        'Content-Range': `bytes ${start}-${end}/${size}`,
+        'Content-Length': chunksize,
+      };
+      res.writeHead(HttpStatus.PARTIAL_CONTENT, headers);
       const readStreamfile = createReadStream(videoPath, {
         start,
         end,
         highWaterMark: 60,
       });
-      const head = {
-        'Content-Range': `bytes ${start}-${end}/${size}`,
-        'Content-Length': chunksize,
-      };
-      res.writeHead(HttpStatus.PARTIAL_CONTENT, head);
       readStreamfile.pipe(res);
     } else {
       const head = {

@@ -66,6 +66,18 @@ export class FilesService {
     return files.map((value) => value.substring(0, 36));
   }
 
+  getVideoRange(headers, size: number) {
+    const videoRange = headers.range;
+    if (videoRange) {
+      const parts = videoRange.replace(/bytes=/, '').split('-');
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : size - 1;
+      const chunksize = end - start + 1;
+      return { start, end, chunksize };
+    }
+    return null;
+  }
+
   async createPDFTickets(info: TicketInfo, seats: Seat[]) {
     const imageJpegPath = await this.convertImageToJpegAndSave(info.poster);
     info.poster = imageJpegPath;
