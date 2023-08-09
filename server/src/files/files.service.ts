@@ -11,17 +11,17 @@ import { Seat } from 'src/interfaces/seat.interface';
 @Injectable()
 export class FilesService {
   async saveImage(image: Express.Multer.File) {
-    this.validateImageType(image);
+    this.validateFileType(image, 'image');
     const fileName = this.generateUniqueWebPImageName();
     await this.storeImage(image.buffer, fileName);
     return fileName;
   }
 
-  private validateImageType(image: Express.Multer.File) {
-    const mimetype = image.mimetype;
-    if (!mimetype.includes('image')) {
+  private validateFileType(file: Express.Multer.File, type: string) {
+    const mimetype = file.mimetype;
+    if (!mimetype.includes(type)) {
       throw new HttpException(
-        'Unsupported media type. Only image files are allowed.',
+        `Unsupported media type. Only ${type} files are allowed.`,
         HttpStatus.UNSUPPORTED_MEDIA_TYPE,
       );
     }
