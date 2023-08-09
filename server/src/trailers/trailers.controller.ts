@@ -64,6 +64,11 @@ export class TrailersController {
     return this.filesService.saveVideo(file, movieId);
   }
 
+  @Get()
+  findAll() {
+    return this.filesService.getFileNames('videos');
+  }
+
   @Get(':id')
   deleteOne(@Param('id') id: string) {
     return this.filesService.removeVideo(id);

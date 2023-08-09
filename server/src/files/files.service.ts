@@ -3,7 +3,7 @@ import { TicketInfo } from 'src/interfaces/ticket-info.interface';
 import * as uuid from 'uuid';
 import { resolve } from 'path';
 import { createWriteStream } from 'fs';
-import { readFile, unlink, writeFile } from 'fs/promises';
+import { readFile, readdir, unlink, writeFile } from 'fs/promises';
 import * as sharp from 'sharp';
 import * as PDFDocument from 'pdfkit';
 import { Seat } from 'src/interfaces/seat.interface';
@@ -58,6 +58,12 @@ export class FilesService {
     const fileName = this.generateFullFileName('mp4', name);
     const filePath = resolve('videos', fileName);
     await unlink(filePath);
+  }
+
+  async getFileNames(dirname: string) {
+    const dirPath = resolve(dirname);
+    const files = await readdir(dirPath);
+    return files.map((value) => value.substring(0, 36));
   }
 
   async createPDFTickets(info: TicketInfo, seats: Seat[]) {
