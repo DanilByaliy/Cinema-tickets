@@ -46,6 +46,20 @@ export class FilesService {
     return sharp(file).jpeg().toBuffer();
   }
 
+  async saveVideo(video: Express.Multer.File, id: string) {
+    this.validateFileType(video, 'video');
+    const fileName = this.generateFullFileName('mp4', id);
+    const filePath = resolve('videos', fileName);
+    await writeFile(filePath, video.buffer);
+    return fileName;
+  }
+
+  async removeVideo(name: string) {
+    const fileName = this.generateFullFileName('mp4', name);
+    const filePath = resolve('videos', fileName);
+    await unlink(filePath);
+  }
+
   async createPDFTickets(info: TicketInfo, seats: Seat[]) {
     const imageJpegPath = await this.convertImageToJpegAndSave(info.poster);
     info.poster = imageJpegPath;
