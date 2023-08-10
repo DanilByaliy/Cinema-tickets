@@ -27,7 +27,7 @@ export class TrailersController {
     @Headers() headers,
     @Res() res: Response,
   ) {
-    const videoPath = `videos/${id}.mp4`;
+    const videoPath = `videos/${encodeURIComponent(id)}.mp4`;
     const { size } = statSync(videoPath);
     const videoRange = this.filesService.getVideoRange(headers, size);
 
