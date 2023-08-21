@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    container_name: zookeeper
+    image: wurstmeister/zookeeper
+    ports: 
+      - 2181:2181
+
+  kafka:
+    container_name: kafka
+    image: wurstmeister/kafka
+    ports: 
+      - 9092:9092
+    volumes:
+      - ./data/kafka:/var/run/docker.sock
+    environment:
+      - KAFKA_ADVERTISED_HOST_NAME=kafka
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+    depends_on:
+      - zookeeper
+
+  app:
+    container_name: app
+    image: bialyidanil/cinema-tickets-server:0.1
+    ports:
+     - 3000:3000
+    volumes:
+      - ./app:/app
+    env_file:
+    - .env.development
+    depends_on:
+      - kafka
+    restart: always
