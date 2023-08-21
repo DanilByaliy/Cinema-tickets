@@ -2,8 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { TicketInfo } from 'src/interfaces/ticket-info.interface';
 import * as uuid from 'uuid';
 import { resolve } from 'path';
-import { createWriteStream } from 'fs';
-import { readFile, unlink, writeFile } from 'fs/promises';
+import { createReadStream, createWriteStream, statSync } from 'fs';
+import { readFile, readdir, unlink, writeFile } from 'fs/promises';
 import * as sharp from 'sharp';
 import * as PDFDocument from 'pdfkit';
 import { Seat } from 'src/interfaces/seat.interface';
@@ -11,24 +11,25 @@ import { Seat } from 'src/interfaces/seat.interface';
 @Injectable()
 export class FilesService {
   async saveImage(image: Express.Multer.File) {
-    this.validateImageType(image);
-    const fileName = this.generateUniqueWebPImageName();
+    this.validateFileType(image, 'image');
+    const fileName = this.generateFullFileName('webp');
     await this.storeImage(image.buffer, fileName);
     return fileName;
   }
 
-  private validateImageType(image: Express.Multer.File) {
-    const mimetype = image.mimetype;
-    if (!mimetype.includes('image')) {
+  private validateFileType(file: Express.Multer.File, type: string) {
+    const mimetype = file.mimetype;
+    if (!mimetype.includes(type)) {
       throw new HttpException(
-        'Unsupported media type. Only image files are allowed.',
+        `Unsupported media type. Only ${type} files are allowed.`,
         HttpStatus.UNSUPPORTED_MEDIA_TYPE,
       );
     }
   }
 
-  private generateUniqueWebPImageName() {
-    return uuid.v4() + '.webp';
+  private generateFullFileName(format: string, name?: string) {
+    const fileName = name || uuid.v4();
+    return `${fileName}.${format}`;
   }
 
   private async storeImage(buffer: Buffer, fileName: string) {
@@ -43,6 +44,57 @@ export class FilesService {
 
   private async convertToJpeg(file: Buffer) {
     return sharp(file).jpeg().toBuffer();
+  }
+
+  async saveVideo(video: Express.Multer.File, id: string) {
+    this.validateFileType(video, 'video');
+    const fileName = this.generateFullFileName('mp4', id);
+    const filePath = resolve('videos', fileName);
+    await writeFile(filePath, video.buffer);
+    return fileName;
+  }
+
+  async removeVideo(name: string) {
+    const fileName = this.generateFullFileName('mp4', name);
+    const filePath = resolve('videos', fileName);
+    await unlink(filePath);
+  }
+
+  async getFileNames(dirname: string) {
+    const dirPath = resolve(dirname);
+    const files = await readdir(dirPath);
+    return files.map((value) => value.substring(0, 36));
+  }
+
+  createSrteamAndOptions(videoId: string, videoRange: string) {
+    const fileName = this.generateFullFileName('mp4', videoId);
+    const filePath = resolve('videos', fileName);
+    const { size } = statSync(filePath);
+    const range = this.parseVideoRange(videoRange, size);
+    const stream = this.getStream(filePath, range);
+    return { stream, size, range };
+  }
+
+  parseVideoRange(videoRange: string, size: number) {
+    if (videoRange) {
+      const parts = videoRange.replace(/bytes=/, '').split('-');
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : size - 1;
+      const chunksize = end - start + 1;
+      return { start, end, chunksize };
+    }
+    return null;
+  }
+
+  getStream(videoPath: string, videoRange) {
+    if (!videoRange) return createReadStream(videoPath);
+
+    const { start, end } = videoRange;
+    return createReadStream(videoPath, {
+      start,
+      end,
+      highWaterMark: 60,
+    });
   }
 
   async createPDFTickets(info: TicketInfo, seats: Seat[]) {
@@ -68,7 +120,7 @@ export class FilesService {
   }
 
   private async createPDFTicket(info: TicketInfo & Seat) {
-    const name = 'ticket_' + uuid.v4() + '.pdf';
+    const name = 'ticket_' + this.generateFullFileName('pdf');
     const path = resolve('pdfs', name);
 
     const pdfDoc = this.drawTicket(info);

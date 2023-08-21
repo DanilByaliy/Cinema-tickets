@@ -20,6 +20,7 @@ import { EmailsModule } from './emails/emails.module';
 import { OrdersModule } from './orders/orders.module';
 import { SeatSelectionModule } from './seat-selection/seat-selection.module';
 import { join } from 'path';
+import { TrailersModule } from './trailers/trailers.module';
 import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
@@ -70,6 +71,7 @@ import * as redisStore from 'cache-manager-redis-store';
     UsersModule,
     OrdersModule,
     SeatSelectionModule,
+    TrailersModule,
   ],
   controllers: [AppController],
   providers: [AppService, EmailsService],
