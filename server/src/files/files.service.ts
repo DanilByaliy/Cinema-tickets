@@ -66,8 +66,7 @@ export class FilesService {
     return files.map((value) => value.substring(0, 36));
   }
 
-  getVideoRange(headers, size: number) {
-    const videoRange = headers.range;
+  parseVideoRange(videoRange: string, size: number) {
     if (videoRange) {
       const parts = videoRange.replace(/bytes=/, '').split('-');
       const start = parseInt(parts[0], 10);

@@ -29,7 +29,11 @@ export class TrailersController {
   ) {
     const videoPath = `videos/${encodeURIComponent(id)}.mp4`;
     const { size } = statSync(videoPath);
-    const videoRange = this.filesService.getVideoRange(headers, size);
+    const headersVideoRange = headers.range || '';
+    const videoRange = this.filesService.parseVideoRange(
+      headersVideoRange,
+      size,
+    );
 
     if (videoRange) {
       const { start, end, chunksize } = videoRange;
