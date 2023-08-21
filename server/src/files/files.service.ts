@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { TicketInfo } from 'src/interfaces/ticket-info.interface';
 import * as uuid from 'uuid';
 import { resolve } from 'path';
-import { createWriteStream } from 'fs';
+import { createReadStream, createWriteStream } from 'fs';
 import { readFile, readdir, unlink, writeFile } from 'fs/promises';
 import * as sharp from 'sharp';
 import * as PDFDocument from 'pdfkit';
@@ -75,6 +75,17 @@ export class FilesService {
       return { start, end, chunksize };
     }
     return null;
+  }
+
+  getStream(videoPath: string, videoRange) {
+    if (!videoRange) return createReadStream(videoPath);
+
+    const { start, end } = videoRange;
+    return createReadStream(videoPath, {
+      start,
+      end,
+      highWaterMark: 60,
+    });
   }
 
   async createPDFTickets(info: TicketInfo, seats: Seat[]) {
