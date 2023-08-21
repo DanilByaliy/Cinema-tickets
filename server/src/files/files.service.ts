@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { TicketInfo } from 'src/interfaces/ticket-info.interface';
 import * as uuid from 'uuid';
 import { resolve } from 'path';
-import { createReadStream, createWriteStream } from 'fs';
+import { createReadStream, createWriteStream, statSync } from 'fs';
 import { readFile, readdir, unlink, writeFile } from 'fs/promises';
 import * as sharp from 'sharp';
 import * as PDFDocument from 'pdfkit';
@@ -64,6 +64,15 @@ export class FilesService {
     const dirPath = resolve(dirname);
     const files = await readdir(dirPath);
     return files.map((value) => value.substring(0, 36));
+  }
+
+  createSrteamAndOptions(videoId: string, videoRange: string) {
+    const fileName = this.generateFullFileName('mp4', videoId);
+    const filePath = resolve('videos', fileName);
+    const { size } = statSync(filePath);
+    const range = this.parseVideoRange(videoRange, size);
+    const stream = this.getStream(filePath, range);
+    return { stream, size, range };
   }
 
   parseVideoRange(videoRange: string, size: number) {

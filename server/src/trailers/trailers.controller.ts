@@ -9,7 +9,6 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { statSync } from 'fs';
 import { Headers } from '@nestjs/common';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -27,17 +26,14 @@ export class TrailersController {
     @Headers() headers,
     @Res() res: Response,
   ) {
-    const videoPath = `videos/${encodeURIComponent(id)}.mp4`;
-    const { size } = statSync(videoPath);
     const headersVideoRange = headers.range || '';
-    const videoRange = this.filesService.parseVideoRange(
+    const { stream, size, range } = this.filesService.createSrteamAndOptions(
+      id,
       headersVideoRange,
-      size,
     );
-    const stream = this.filesService.getStream(videoPath, videoRange);
 
-    if (videoRange) {
-      const { start, end, chunksize } = videoRange;
+    if (range) {
+      const { start, end, chunksize } = range;
       const headers = {
         'Content-Range': `bytes ${start}-${end}/${size}`,
         'Content-Length': chunksize,
