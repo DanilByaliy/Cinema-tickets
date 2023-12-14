@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import getMoviesByPage from '../services/moviesService';
+import { getMoviesByPage } from '../services/moviesService';
 
 const MoviesContext = createContext(undefined);
 
