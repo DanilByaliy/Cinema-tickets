@@ -2,6 +2,7 @@ import { Row, Col, Button } from 'react-bootstrap';
 import MovieCard from './Components/MovieCard';
 import serverURL from '../../constants/index';
 import { useMovies } from '../../contexts/MoviesContext';
+import SessionList from './Components/SessionsList';
 
 function MoviesPage() {
   const [movies, error] = useMovies();
@@ -16,7 +17,7 @@ function MoviesPage() {
                 <MovieCard movie={movie} serverURL={serverURL} />
               </Col>
               <Col className="my-2">
-                <span>Розклад Сеансів на сьогодні</span>
+                <SessionList />
               </Col>
               <Col className="my-2">
                 <Button variant="secondary">Купити квитки</Button>
