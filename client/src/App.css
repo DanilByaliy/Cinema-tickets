@@ -1,0 +1,133 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+main {
+  padding: 2em;
+}
+
+.presentation {
+  background-image: url('../public/presentation.jpg');
+  box-shadow: inset 0 0 10em #000;
+}
+
+.presentation > div {
+  padding: 2em;
+
+  font-size: 1.5em;
+  font-weight: 600;
+  color: aliceblue;
+  text-align: center;
+}
+
+.movie-row {
+  align-items: center;
+  padding: 2em;
+  text-align: center;
+  border-bottom: #817f7f 1px solid;
+}
+
+.footer {
+  padding: 3em;
+  background-color: #343434;
+}
+
+.footer a {
+  color: #ccc;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.footer li {
+  flex: 1;
+}
+
+.footer li a {
+  display: block;
+}
+
+.footer a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.footer p {
+  color: #ccc;
+}
+
+.copyright {
+  border-top: 1px solid #ccc;
+}
+
+.contacts div {
+  padding: 0.5em 0;
+  font-size: 1.2em;
+}
+
+.contacts a:link {
+  color: #000;
+}
+
+.feedback {
+  padding: 3em;
+  background-color: #ccc;
+  border-radius: 3px;
+}
+
+.feedback input,
+.feedback textarea {
+  background-color: #b3b3b3;
+}
+
+.feedback button {
+  width: 100%;
+}
+
+.slider {
+  margin: 3em 0;
+  border: #000 1px solid;
+}
+
+.slider-slide {
+  max-height: 50rem;
+}
+
+.slider-caption {
+  overflow: hidden;
+  max-height: 12rem;
+  margin-bottom: 3em;
+}
+
+.slider-caption h3 {
+  font-size: 40px;
+}
+
+.slider-caption p {
+  font-size: 20px;
+}
+
+.gallery img {
+  width: 100%;
+}
+
+.gallery-main,
+.gallery-images {
+  margin: 1vw 0;
+}
+
+.gallery-main img {
+  height: 32vw;
+}
+
+.gallery-images > div {
+  cursor: pointer;
+  margin: 1vw 0;
+  transition: transform 1s;
+}
+
+.gallery-images > div:hover {
+  transform: scale(1.05);
+}
